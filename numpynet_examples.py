@@ -1,7 +1,7 @@
 """
-NumpyNet!
-
-@author: Brad Beechler (brad.e.beechler@gmail.com)
+numpynet_examples
+Contains examples and demos for numpynet
+@author: Chronocook (chronocook@gmail.com)
 """
 
 import time
@@ -22,6 +22,17 @@ Lol remember this is for fun
 
 def make_checkerboard_training_set(num_points=0, noise=0.0, randomize=True,
                                    x_min=0.0, x_max=1.0, y_min=0.0, y_max=1.0):
+    """
+    Makes a binary array like a checkerboard (to work on an xor like problem)
+    :param num_points: (int) The number of points you want in your training set
+    :param noise: (float) percent to bit-flip in the training data, allows it to be imperfect
+    :param randomize: (bool) True if you want the locations to be random, False if you want an ordered grid
+    :param x_min: (float) minimum x of the 2D domain
+    :param x_max: (float) maximum x of the 2D domain
+    :param y_min: (float) minimum y of the 2D domain
+    :param y_max: (float) maximum y of the 2D domain
+    :return:
+    """
     log.out.info("Generating target data.")
     # Select coordinates to do an XOR like operation on
     coords = []
@@ -51,6 +62,8 @@ def make_checkerboard_training_set(num_points=0, noise=0.0, randomize=True,
             if np.random.random() < noise:
                 bools[i] = np.logical_not(bools[i])
     # Build training vectors
+    train_in = None
+    train_out = None
     for i, coord in enumerate(coords):
         # Need to initialize the arrays
         if i == 0:
@@ -65,14 +78,20 @@ def make_checkerboard_training_set(num_points=0, noise=0.0, randomize=True,
 
 
 def make_smiley_training_set(num_points=0, delta=0.05):
+    """
+    Makes a binary array that looks like a smiley face (for fun, challenging problem)
+    :param num_points: (int) The number of points you want in your training set
+    :param delta:
+    :return:
+    """
     log.out.info("Generating happy data.")
     # Select coordinates to do an XOR like operation on
     coords = []
     bools = []
-    # eye: x=0.6 {0.6<y<0.7}
-    # eye: x=0.4 {0.6<y<0.7}
-    # smile: (1.5*(x-0.5))**2 + 0.25 {0.25<x<0.75}
-    x_min = 0.0; x_max = 1.0; y_min = 0.0; y_max = 1.0
+    x_min = 0.0
+    x_max = 1.0
+    y_min = 0.0
+    y_max = 1.0
     for i in range(num_points):
         # Add num_points randomly
         coord_point = np.random.random(2)
@@ -81,7 +100,6 @@ def make_smiley_training_set(num_points=0, delta=0.05):
         coords.append(coord_point)
 
     # Assign an xor boolean value to the coordinates
-
     for coord_point in coords:
         x = coord_point[1]
         y = coord_point[0]
@@ -90,12 +108,14 @@ def make_smiley_training_set(num_points=0, delta=0.05):
         elif (abs(x - 0.35) < delta) & (abs(y - 0.65) < (0.05+delta)):
             bools.append(True)
         elif ((x > 0.2) & (x < 0.8) &
-              (abs(y - ((1.5*(x-0.5))**2 + 0.25)) < delta)):
+              (abs(y - ((1.5 * (x - 0.5))**2 + 0.25)) < delta)):
             bools.append(True)
         else:
             bools.append(False)
 
     # Build training vectors
+    train_in = None
+    train_out = None
     for i, coord in enumerate(coords):
         # Need to initialize the arrays
         if i == 0:
@@ -140,12 +160,12 @@ def complete_a_picture():
                     visualize=True, visualize_percent=1, debug_visualize=True)
 
 
+# TODO write this!
 def paint_a_picture():
     """
     Here we give the net many examples of how to paint something like a square based on
     coordinates and try to get it to learn how to make that shape given input coords
     """
-    print("foo")
     # Make a training set (many random i,j coord and an x by y box around that coord to start with)
 
     # Throw it into the net

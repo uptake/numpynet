@@ -1,7 +1,7 @@
 """
-NumpyNet!
-
-@author: Brad Beechler (brad.e.beechler@gmail.com)
+numpynet_model
+Supports numpynet visualizations in Visdom
+@author: Chronocook (chronocook@gmail.com)
 """
 import math
 import numpy as np
@@ -11,10 +11,14 @@ from loggit import log
 
 
 class NumpyNet:
+    """
+    The main object that defines a neural network architecture and it's train, predict, and forward operators
+    """
     layer = []   # Also called neurons
-    weight = []  # Also calles synapses
+    weight = []  # Also called synapses
     num_layers = 0
 
+    # TODO make activation an array so you can use different activations on different layers
     def __init__(self, num_features, batch_size, num_hidden=0, hidden_sizes=None,
                  activation="sigmoid", learning_rate=0.01,
                  learning_decay=None, weight_decay=None, dropout_rate=None,
@@ -24,10 +28,17 @@ class NumpyNet:
         This object will have input/output layers and weights (neurons and synapses)
         Both will be lists of numpy arrays having varying sizes
         Synapses are initialized with random weights with mean 0
-        :param input_shape: Shape of the input layer
-        :param output_shape: Shape of the output layer
-        :param num_hidden: number of hidden layers
-        :return:
+        :param num_features: (int) Shape of the input layer
+        :param batch_size: (int) Size of the batches you will be running through the net while training
+        :param num_hidden: (int) Number of hidden layers
+        :param hidden_sizes: (list[int]) The sizes you want your hidden layers to be
+        :param activation: (str) The activation function you want to use
+        :param learning_rate:
+        :param learning_decay:
+        :param weight_decay:
+        :param dropout_rate:
+        :param init_weight_spread:
+        :param random_seed: (int) Can specify the random seed if you want to reproduce the same runs
         """
         # Set network hyperparameters
         self.activation_function = common.Activation(activation).function
@@ -44,7 +55,7 @@ class NumpyNet:
         self.weight = [np.empty(0)] * (self.num_layers - 1)
 
         # For diagnostics
-        self.loss_history = list()
+        self.loss_history = list()  # This will be appended to a lot so a list is a bit better
         self.predict_space = None  # If left undefined will define by training input bounds
         self.input_shape = [batch_size, num_features]
         if hidden_sizes is None:
@@ -145,21 +156,19 @@ class NumpyNet:
 
             # Report error every x% and output visualization
             if (e % runfracround) == 0:
-                log.out.info("Epoch: " + str(e) + " Average Error: " + str(self.loss_history[-1]))
+                log.out.info("Epoch: " + str(e) + " Current loss: " + str(self.loss_history[-1]))
                 if visualize:
                     nnviz.plot_loss(self.loss_history, rolling_size=runfracround)
                     prediction_matrix, axis_x, axis_y = common.predict_2d_space(self, delta=0.02)
                     nnviz.plot_2d_prediction(prediction_matrix, axis_x, axis_y)
                     if debug_visualize:
-                        nnviz.plot_network(self.layer, self.weight)
+                        nnviz.plot_network(self)
 
             if self.weight_decay is not None:
                 for layer_index in range(len(self.layer) - 1, 0, -1):
                     self.weight[layer_index - 1] -= self.weight[layer_index - 1] * self.learning_rate * self.weight_decay
             #TODO visualize weight growth, should this be by epoch or every?
-
             # if self.dropout_rate is not None:
-
 
         log.out.info("Final Error: " + str(np.mean(np.abs(error[-1]))))
         prediction_matrix, axis_x, axis_y = common.predict_2d_space(self, delta=0.002)
