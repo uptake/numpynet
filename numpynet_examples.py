@@ -7,6 +7,7 @@ Contains examples and demos for numpynet
 import time
 import numpy as np
 from numpynet_model import NumpyNet
+import numpynet_common as common
 import numpynet_visualize as nnviz
 from loggit import log
 
@@ -146,7 +147,7 @@ def complete_a_picture():
                           x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max, delta=0.01)
 
     training_size = train_in.shape[0]
-    batch_size = round(training_size / 10.0)
+    batch_size = round(training_size / 3.0)
     num_features = train_in.shape[1]
 
     numpy_net = NumpyNet(num_features, batch_size,
@@ -157,7 +158,8 @@ def complete_a_picture():
     numpy_net.report_model()
 
     numpy_net.train(train_in, train_out, epochs=200000,
-                    visualize=True, visualize_percent=1, debug_visualize=True)
+                    visualize=True, visualize_percent=1, save_best="./numpynet_best_model.pickle",
+                    debug_visualize=True)
 
 
 # TODO write this!
@@ -167,10 +169,14 @@ def paint_a_picture():
     coordinates and try to get it to learn how to make that shape given input coords
     """
     # Make a training set (many random i,j coord and an x by y box around that coord to start with)
-
     # Throw it into the net
-
     # Test how it does for some random coordinate inputs
+
+
+def load_a_model(filename):
+    my_net = NumpyNet.load(filename)
+    prediction_matrix, axis_x, axis_y = common.predict_2d_space(my_net, delta=0.002)
+    nnviz.plot_2d_prediction(prediction_matrix, axis_x, axis_y, title="Best Prediction")
 
 
 if __name__ == '__main__':
@@ -182,7 +188,7 @@ if __name__ == '__main__':
 
     complete_a_picture()
 
-    # paint_a_picture()
+    load_a_model("./numpynet_best_model.pickle")
 
     # Shut down and clean up
     total_time = round((time.time() - start_time), 0)

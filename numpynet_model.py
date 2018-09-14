@@ -4,6 +4,7 @@ Supports numpynet visualizations in Visdom
 @author: Chronocook (chronocook@gmail.com)
 """
 import math
+import pickle
 import numpy as np
 import numpynet_common as common
 import numpynet_visualize as nnviz
@@ -82,20 +83,40 @@ class NumpyNet:
         self.forward(np.zeros(self.input_shape))
 
     def forward(self, input_info):
+        """
+
+        :param input_info:
+        :return:
+        """
         # Feed forward through layers
         self.layer[0] = input_info
         for i in range(self.num_layers - 1):
             self.layer[i + 1] = self.activation_function(np.dot(self.layer[i], self.weight[i]))
 
     def predict(self, input_info):
+        """
+
+        :param input_info:
+        :return:
+        """
         # Feed forward through layers not saving result in network and return the result
         prediction = input_info
         for i in range(self.num_layers - 1):
             prediction = self.activation_function(np.dot(prediction, self.weight[i]))
         return prediction
 
-    def train(self, train_in, train_out, epochs=100,
-              visualize=True, visualize_percent=5, debug_visualize=True):
+    def train(self, train_in, train_out, epochs=100, save_best=None,
+              visualize=True, visualize_percent=5.0, debug_visualize=True):
+        """
+
+        :param train_in: (np.array) Input training data (features)
+        :param train_out: (np.array) Output training data (targets)
+        :param epochs: How many times you want to iterate over the whole training dataset
+        :param save_best: (str) If specified 
+        :param visualize: (bool) Whether or not to visualize the training process
+        :param visualize_percent: (float) If above is true how often you want to visualize (percent of epochs)
+        :param debug_visualize: (bool) Turns on debug visualizations
+        """
         set_size = train_in.shape[0]
         log.out.info("Given " + str(set_size) + " training points.")
         iterations = math.ceil(set_size / self.batch_size)
@@ -154,6 +175,12 @@ class NumpyNet:
 
             self.loss_history.append(sum(batch_loss) / (iterations * len(train_in)))
 
+            # If saving the best models check if this is the best so far
+            if save_best is not None:
+                if self.loss_history[-1] == min(self.loss_history):
+                    log.out.info("Current model is the best so far, saving.")
+                    self.save(save_best)
+
             # Report error every x% and output visualization
             if (e % runfracround) == 0:
                 log.out.info("Epoch: " + str(e) + " Current loss: " + str(self.loss_history[-1]))
@@ -176,6 +203,9 @@ class NumpyNet:
             nnviz.plot_2d_prediction(prediction_matrix, axis_x, axis_y, title="Final Prediction")
 
     def report_model(self):
+        """
+        Simple method to report the model details (could override print but this is fine)
+        """
         log.out.info("Model topology: ")
         log.out.info("Number of layers: " + str(self.num_layers) + " (" + str(self.num_layers - 2) + " hidden)")
         for l in range(self.num_layers-1):
@@ -183,5 +213,22 @@ class NumpyNet:
             log.out.info("Weight " + str(l+1) + ": " + str(self.weight[l].shape))
         log.out.info("Layer " + str(self.num_layers+1) + ": " + str(self.layer[-1].shape))
 
-        # import objgraph
-        # objgraph.show_refs([self.__dict__], filename='./nn-graph.png')
+    def save(self, filename):
+        """
+        Saves this NumpyNet object to a pickle
+        :param filename: (str) The name of the file you wan to save
+        """
+        # TODO could add some filesystem checks to make sure this is writeable
+        with open(filename, 'wb') as ouput_handle:  # Overwrites any existing file.
+            pickle.dump(self, ouput_handle, pickle.HIGHEST_PROTOCOL)
+
+    @staticmethod
+    def load(filename):
+        """
+        Loads a NumpyNet object from a pickle
+        :param filename: (str) The name of the file you wan to load
+        :return: (object) The net object
+        """
+        with open(filename, 'rb') as f:
+            net = pickle.load(f)
+        return net
