@@ -9,7 +9,6 @@ import numpy as np
 import numpynet.common as common
 import numpynet.visualize as NumpynetVizClient
 from numpynet.loggit import log
-from copy import deepcopy
 
 
 class NumpyNet:

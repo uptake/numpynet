@@ -29,4 +29,4 @@ Start visdom server locally:
 
 Run a demo and have some fun:
 
-    python numpynet_examples.py
+    python examples.py
