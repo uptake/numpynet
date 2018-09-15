@@ -6,16 +6,17 @@ Supports numpynet visualizations in Visdom
 import numpy as np
 from visdom import Visdom
 
-viz = Visdom()
-viz.close()
+#viz = Visdom()
+#viz.close()
+
 # Initialize these global windows for things like refreshing
-loss_window = None
-loss_window_rolling = None
-prediction_2d = None
-layer_window_01 = None
-layer_window_02 = None
-weight_window_01 = None
-weight_window_02 = None
+#loss_window = None
+#loss_window_rolling = None
+#prediction_2d = None
+#layer_window_01 = None
+#layer_window_02 = None
+#weight_window_01 = None
+#weight_window_02 = None
 
 
 def plot_loss(loss_history, rolling_size=50):

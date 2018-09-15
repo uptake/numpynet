@@ -6,9 +6,9 @@ Supports numpynet visualizations in Visdom
 import math
 import pickle
 import numpy as np
-import numpynet_common as common
-import numpynet_visualize as nnviz
-from loggit import log
+import numpynet.common as common
+import numpynet.visualize as nnviz
+from numpynet.loggit import log
 
 
 class NumpyNet:
