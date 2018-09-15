@@ -6,10 +6,11 @@ Contains examples and demos for numpynet
 
 import time
 import numpy as np
-from numpynet_model import NumpyNet
-import numpynet_common as common
-import numpynet_visualize as nnviz
-from loggit import log
+from numpynet.model import NumpyNet
+import numpynet.common as common
+from numpynet.visualize import NumpynetVizClient
+from numpynet.loggit import log
+from visdom import Visdom
 
 """
 # TODO
@@ -130,21 +131,31 @@ def make_smiley_training_set(num_points=0, delta=0.05):
     return train_in, train_out
 
 
-def complete_a_picture():
+def complete_a_picture(viz_client):
     """
     Here we give the net some random points (1 or 0) from a function and it tries to fill the
     rest of the space with what it thinks it should be
+
+    :param viz_client: An instance of NumpynetVizClient
     """
     # x_min = -1.5; x_max = 1.5; y_min = -1.5; y_max = 1.5
-    x_min = 0; x_max = 1.5; y_min = 0; y_max = 1.5
+    x_min = 0
+    x_max = 1.5
+    y_min = 0
+    y_max = 1.5
     train_in, train_out = make_checkerboard_training_set(num_points=1000, noise=0.00, randomize=True,
                                                          x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max)
 
     # x_min = 0.0; x_max = 1.0; y_min = 0.0; y_max = 1.0
     # train_in, train_out = make_smiley_training_set(num_points=1000)
-
-    nnviz.plot_2d_classes(train_in, train_out, title="Training data",
-                          x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max, delta=0.01)
+    viz_client.plot_2d_classes(train_in,
+                               train_out,
+                               title="Training data",
+                               x_min=x_min,
+                               x_max=x_max,
+                               y_min=y_min,
+                               y_max=y_max,
+                               delta=0.01)
 
     training_size = train_in.shape[0]
     batch_size = round(training_size / 3.0)
@@ -155,6 +166,7 @@ def complete_a_picture():
                          activation="sigmoid", learning_rate=0.0002,
                          dropout_rate=None, weight_decay=None,
                          random_seed=None)
+    numpy_net.set_viz_client(viz_client)
     numpy_net.report_model()
 
     numpy_net.train(train_in, train_out, epochs=200000,
@@ -171,12 +183,13 @@ def paint_a_picture():
     # Make a training set (many random i,j coord and an x by y box around that coord to start with)
     # Throw it into the net
     # Test how it does for some random coordinate inputs
+    pass
 
 
-def load_a_model(filename):
+def load_a_model(filename, viz_client):
     my_net = NumpyNet.load(filename)
     prediction_matrix, axis_x, axis_y = common.predict_2d_space(my_net, delta=0.002)
-    nnviz.plot_2d_prediction(prediction_matrix, axis_x, axis_y, title="Best Prediction")
+    viz_client.plot_2d_prediction(prediction_matrix, axis_x, axis_y, title="Best Prediction")
 
 
 if __name__ == '__main__':
@@ -186,7 +199,14 @@ if __name__ == '__main__':
     # Set the logging level to normal and start run
     start_time = time.time()
 
-    complete_a_picture()
+    # Set up visdom configuration and kick up a connection
+    viz = Visdom()
+    viz.close()
+
+    # Set up NumpynetVizClient
+    client = NumpynetVizClient(viz=viz)
+
+    complete_a_picture(client)
 
     load_a_model("./numpynet_best_model.pickle")
 

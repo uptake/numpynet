@@ -7,8 +7,9 @@ import math
 import pickle
 import numpy as np
 import numpynet.common as common
-import numpynet.visualize as nnviz
+import numpynet.visualize as NumpynetVizClient
 from numpynet.loggit import log
+from copy import deepcopy
 
 
 class NumpyNet:
@@ -18,6 +19,7 @@ class NumpyNet:
     layer = []   # Also called neurons
     weight = []  # Also called synapses
     num_layers = 0
+    viz = None
 
     # TODO make activation an array so you can use different activations on different layers
     def __init__(self, num_features, batch_size, num_hidden=0, hidden_sizes=None,
@@ -81,6 +83,13 @@ class NumpyNet:
 
         # Initialize layers with zeros
         self.forward(np.zeros(self.input_shape))
+
+    def set_viz_client(self, viz_client):
+        """
+        Optionally instrument NumpyNet with a Visdom client
+        to make cool plots during training.
+        """
+        self.viz = viz_client
 
     def forward(self, input_info):
         """
@@ -184,12 +193,12 @@ class NumpyNet:
             # Report error every x% and output visualization
             if (e % runfracround) == 0:
                 log.out.info("Epoch: " + str(e) + " Current loss: " + str(self.loss_history[-1]))
-                if visualize:
-                    nnviz.plot_loss(self.loss_history, rolling_size=runfracround)
+                if visualize and self.viz is not None:
+                    self.viz.plot_loss(self.loss_history, rolling_size=runfracround)
                     prediction_matrix, axis_x, axis_y = common.predict_2d_space(self, delta=0.02)
-                    nnviz.plot_2d_prediction(prediction_matrix, axis_x, axis_y)
+                    self.viz.plot_2d_prediction(prediction_matrix, axis_x, axis_y)
                     if debug_visualize:
-                        nnviz.plot_network(self)
+                        self.viz.plot_network(self)
 
             if self.weight_decay is not None:
                 for layer_index in range(len(self.layer) - 1, 0, -1):
@@ -199,8 +208,8 @@ class NumpyNet:
 
         log.out.info("Final Error: " + str(np.mean(np.abs(error[-1]))))
         prediction_matrix, axis_x, axis_y = common.predict_2d_space(self, delta=0.002)
-        if visualize:
-            nnviz.plot_2d_prediction(prediction_matrix, axis_x, axis_y, title="Final Prediction")
+        if visualize and self.viz is not None:
+            self.viz.plot_2d_prediction(prediction_matrix, axis_x, axis_y, title="Final Prediction")
 
     def report_model(self):
         """
@@ -219,8 +228,19 @@ class NumpyNet:
         :param filename: (str) The name of the file you wan to save
         """
         # TODO could add some filesystem checks to make sure this is writeable
-        with open(filename, 'wb') as ouput_handle:  # Overwrites any existing file.
+
+        # pickle cannot serialize Visdom objects, so need to remove before writing
+        log.out.info("Unsetting viz client")
+        viz_copy = self.viz
+        self.viz = None
+
+        # Overwrites any existing file.
+        with open(filename, 'wb') as ouput_handle:
             pickle.dump(self, ouput_handle, pickle.HIGHEST_PROTOCOL)
+
+        log.out.info("Resetting viz client")
+        self.set_viz_client(viz_copy)
+        pass
 
     @staticmethod
     def load(filename):

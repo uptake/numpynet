@@ -8,17 +8,18 @@ It includes nice visualizations of the process so that the user can watch what i
 
 ## State of the Repo
 ----
-Currently this project is in it's infancy, the basic functionality is there but there's still a lot to do.  So get in there and add some issues you'd like to see or better yet contribute some code!
+Currently this project is in it's infancy. The basic functionality is there but there's still a lot to do. So get in there and [add some issues](https://github.com/UptakeOpenSource/numpynet/issues) you'd like to see or better yet contribute some code!
 
 ## Quick Start
 ----
 Grab NumpyNet:
 
     git clone https://github.com/UptakeOpenSource/numpynet.git
+    cd numpynet
 
-Install visdom:
+Install NumpyNet (will install `visdom` as well):
 
-    pip install visdom
+    python setup.py install
 
 Start visdom server locally:
 
@@ -29,5 +30,3 @@ Start visdom server locally:
 Run a demo and have some fun:
 
     python numpynet_examples.py
-
-
