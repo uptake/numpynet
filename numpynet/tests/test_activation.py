@@ -1,11 +1,11 @@
-import numpynet_common as nnc
-from unittest import TestCase
+import numpynet.common as nnc
+import unittest
 import math
 import numpy as np
 
 
-class TestActivation(TestCase):
-    def test__tanh(self):
+class TestActivation(unittest.TestCase):
+    def test_tanh(self):
         activation = nnc.Activation("tanh")
 
         # Compare scalars
@@ -33,3 +33,7 @@ class TestActivation(TestCase):
         # Test derivative and matrices
         true_values = np.array([[0.96104298, 1., 0.00986604], [0.78644773, 0., 0.00000001]])
         self.assertTrue(np.array_equal(np.round(activation._tanh(matrix, deriv=True), 8), true_values))
+
+
+if __name__ == '__main__':
+    unittest.main()

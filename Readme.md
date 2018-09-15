@@ -30,3 +30,9 @@ Start visdom server locally:
 Run a demo and have some fun:
 
     python examples.py
+
+## Testing the code
+
+We have not set up integration on [Travis CI](https://travis-ci.org/) yet (but it's [coming soon](https://github.com/UptakeOpenSource/numpynet/issues/10)!). For now, to test that this project is building, just do the following:
+
+    ./integration.sh

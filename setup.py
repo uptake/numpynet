@@ -10,6 +10,9 @@ documentation_packages = [
     "sphinxcontrib-napoleon",
     "sphinxcontrib-programoutput"
 ]
+testing_packages = [
+    "pytest"
+]
 
 setuptools.setup(
     name='numpynet',
@@ -24,6 +27,7 @@ setuptools.setup(
         'all': dependencies + documentation_packages,
         'docs': documentation_packages
     },
+    test_suite="tests",
     zip_safe=False,
     classifiers=[
         'Development Status :: 3 - Alpha',
