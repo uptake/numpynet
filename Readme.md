@@ -8,7 +8,7 @@ It includes nice visualizations of the process so that the user can watch what i
 
 ## State of the Repo
 ----
-Currently this project is in it's infancy, the basic functionality is there but there's still a lot to do.  So get in there and add some issues you'd like to see or better yet contribute some code!
+Currently this project is in its infancy. The basic functionality is there but there's still a lot to do.  So get in there and add some issues you'd like to see or better yet contribute some code!
 
 ## Quick Start
 ----
