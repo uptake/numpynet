@@ -17,6 +17,7 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+.pytest_cache/
 
 # C extensions
 *.so
@@ -77,6 +78,7 @@ output/models/*
 !output/files/comparative_output/
 !output/graphs/master/
 !output/models/master/
+*.pickle
 
 # Data files
 data/*.csv
