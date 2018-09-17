@@ -135,8 +135,7 @@ def complete_a_picture():
     Here we give the net some random points (1 or 0) from a function and it tries to fill the
     rest of the space with what it thinks it should be
     """
-    # x_min = -1.5; x_max = 1.5; y_min = -1.5; y_max = 1.5
-    x_min = 0; x_max = 1.5; y_min = 0; y_max = 1.5
+    x_min = 0.0; x_max = 2.0; y_min = 0; y_max = 1.0
     train_in, train_out = make_checkerboard_training_set(num_points=1000, noise=0.00, randomize=True,
                                                          x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max)
 
@@ -152,12 +151,13 @@ def complete_a_picture():
 
     numpy_net = NumpyNet(num_features, batch_size,
                          num_hidden=4, hidden_sizes=[64, 32, 32, 32],
-                         activation="sigmoid", learning_rate=0.0002,
+                         activation=["sigmoid", "tanh", "tanh", "sigmoid", "sigmoid"],
+                         learning_rate=0.0002,
                          dropout_rate=None, weight_decay=None,
                          random_seed=None)
     numpy_net.report_model()
 
-    numpy_net.train(train_in, train_out, epochs=200000,
+    numpy_net.train(train_in, train_out, epochs=5000,
                     visualize=True, visualize_percent=1, save_best="./numpynet_best_model.pickle",
                     debug_visualize=True)
 
@@ -188,7 +188,7 @@ if __name__ == '__main__':
 
     complete_a_picture()
 
-    load_a_model("./numpynet_best_model.pickle")
+    # load_a_model("./numpynet_best_model.pickle")
 
     # Shut down and clean up
     total_time = round((time.time() - start_time), 0)

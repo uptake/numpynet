@@ -139,7 +139,7 @@ def plot_2d_prediction(prediction_matrix, axis_x, axis_y, title="Current Predict
     """
     global prediction_2d
     if prediction_2d is None:
-        prediction_2d = viz.heatmap(X=prediction_matrix,
+        prediction_2d = viz.heatmap(X=prediction_matrix.T,
                                     opts=dict(
                                         title=title,
                                         columnnames=list(axis_x.astype(str)),
@@ -148,7 +148,7 @@ def plot_2d_prediction(prediction_matrix, axis_x, axis_y, title="Current Predict
                                         )
                                     )
     else:
-        prediction_2d = viz.heatmap(X=prediction_matrix,
+        prediction_2d = viz.heatmap(X=prediction_matrix.T,
                                     win=prediction_2d,
                                     opts=dict(
                                         title=title,
@@ -175,11 +175,11 @@ def plot_2d_classes(train_in, train_out,
     """
     axis_x = np.arange(x_min, x_max + delta, delta)
     axis_y = np.arange(y_min, y_max + delta, delta)
-    vis_matrix = np.zeros((len(axis_x), len(axis_y))) + 0.5
+    vis_matrix = np.zeros((len(axis_y), len(axis_x))) + 0.5
     for c, coord in enumerate(train_in):
         idx = (np.abs(axis_x - coord[0])).argmin()
         idy = (np.abs(axis_y - coord[1])).argmin()
-        vis_matrix[idx, idy] = train_out[c]
+        vis_matrix[idy, idx] = train_out[c]
 
     # Make a heatmap
     viz = Visdom()

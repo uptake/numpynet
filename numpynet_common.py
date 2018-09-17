@@ -12,7 +12,7 @@ class Activation:
     A class to hold all of the activation functions, ensures all have derivatives
     """
     function = None
-    available = ["tanh", "tanhp1", "magic_sigmoid", "sigmoid", "relu", "softmax", "stablesoftmax"]
+    available = ["tanh", "tanhp1", "bugged_sigmoid", "sigmoid", "relu", "softmax", "stablesoftmax"]
 
     def __init__(self, choice="sigmoid"):
         """
@@ -25,8 +25,8 @@ class Activation:
             self.function = self._tanh
         elif choice == "tanhp1":
             self.function = self._tanhp1
-        elif choice == "magic_sigmoid":
-            self.function = self._magic_sigmoid
+        elif choice == "bugged_sigmoid":
+            self.function = self._bugged_sigmoid
         elif choice == "sigmoid":
             self.function = self._sigmoid
         elif choice == "relu":

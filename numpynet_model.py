@@ -33,7 +33,8 @@ class NumpyNet:
         :param batch_size: (int) Size of the batches you will be running through the net while training
         :param num_hidden: (int) Number of hidden layers
         :param hidden_sizes: (list[int]) The sizes you want your hidden layers to be
-        :param activation: (str) The activation function you want to use
+        :param activation: (str) or (list[str]) The activation function you want to use,
+                           if given a list will specify an activation function for each layer explicitly
         :param learning_rate:
         :param learning_decay:
         :param weight_decay:
@@ -41,13 +42,7 @@ class NumpyNet:
         :param init_weight_spread:
         :param random_seed: (int) Can specify the random seed if you want to reproduce the same runs
         """
-        # Set network hyperparameters
-        self.activation_function = common.Activation(activation).function
-        self.learning_rate = learning_rate
-        self.learning_decay = learning_decay
-        self.weight_decay = weight_decay
-        self.dropout_rate = dropout_rate
-
+        self.default_layer_size = 16
         # Initialize arrays used for neurons and synapses
         self.batch_size = batch_size
         self.num_layers = 2 + num_hidden  # Input, output, and hidden layers
@@ -55,12 +50,38 @@ class NumpyNet:
         self.layer = [np.empty(0)] * self.num_layers
         self.weight = [np.empty(0)] * (self.num_layers - 1)
 
+        # Set all of the activation functions, you need one for each layer of weights, or one
+        # less than the number of layers. This can be a list of different functions or a string for all the same type
+        if isinstance(activation, str):
+            self.activation_function = [common.Activation(activation).function] * (self.num_layers - 1)
+            self.activation_names = [activation] * self.num_layers
+        elif isinstance(activation, list):
+            if len(activation) == self.num_layers - 1:
+                self.activation_function = list()
+                for i in range(self.num_layers - 1):
+                    print(i, activation[i])
+                    self.activation_function.append(common.Activation(activation[i]).function)
+                self.activation_names = activation
+            else:
+                log.out.error("activation_function must be one less than the number of layers in your network " +
+                              "(num_layers-1 = " + str(self.num_layers - 1) + ")")
+                raise ValueError
+        else:
+            log.out.error("activation_function must be a string or a list of strings")
+            raise ValueError
+
+        # Set network hyperparameters
+        self.learning_rate = learning_rate
+        self.learning_decay = learning_decay
+        self.weight_decay = weight_decay
+        self.dropout_rate = dropout_rate
+
         # For diagnostics
         self.loss_history = list()  # This will be appended to a lot so a list is a bit better
         self.predict_space = None  # If left undefined will define by training input bounds
         self.input_shape = [batch_size, num_features]
         if hidden_sizes is None:
-            self.hidden_sizes = [batch_size] * self.num_hidden
+            self.hidden_sizes = [self.default_layer_size] * self.num_hidden
         else:
             self.hidden_sizes = hidden_sizes
         self.output_shape = [batch_size, 1]
@@ -82,37 +103,37 @@ class NumpyNet:
         # Initialize layers with zeros
         self.forward(np.zeros(self.input_shape))
 
-    def forward(self, input_info):
+    def forward(self, input_features):
         """
-
-        :param input_info:
-        :return:
+        The Forward operator, this method updates the net's current layers
+        :param input_features: (np.array) An n-dimensional array of the input feature vectors
         """
         # Feed forward through layers
-        self.layer[0] = input_info
+        self.layer[0] = input_features
         for i in range(self.num_layers - 1):
-            self.layer[i + 1] = self.activation_function(np.dot(self.layer[i], self.weight[i]))
+            self.layer[i + 1] = self.activation_function[i](np.dot(self.layer[i], self.weight[i]))
 
-    def predict(self, input_info):
+    def predict(self, input_features):
         """
-
-        :param input_info:
-        :return:
+        A prediction method, this method does not update the object but returns a prediction
+        :param input_features: (np.array) An n-dimensional array of the input feature vectors
+        :return: The predicted vector from the current model
         """
         # Feed forward through layers not saving result in network and return the result
-        prediction = input_info
+        prediction = input_features
         for i in range(self.num_layers - 1):
-            prediction = self.activation_function(np.dot(prediction, self.weight[i]))
+            prediction = self.activation_function[i](np.dot(prediction, self.weight[i]))
         return prediction
 
     def train(self, train_in, train_out, epochs=100, save_best=None,
               visualize=True, visualize_percent=5.0, debug_visualize=True):
         """
-
+        This method trains the network by feeding in input features (train_in) and testing the model's
+        prediction against a known set of target vectors (train_out)
         :param train_in: (np.array) Input training data (features)
         :param train_out: (np.array) Output training data (targets)
         :param epochs: How many times you want to iterate over the whole training dataset
-        :param save_best: (str) If specified 
+        :param save_best: (str) If specified
         :param visualize: (bool) Whether or not to visualize the training process
         :param visualize_percent: (float) If above is true how often you want to visualize (percent of epochs)
         :param debug_visualize: (bool) Turns on debug visualizations
@@ -148,7 +169,8 @@ class NumpyNet:
                 batch_in = train_in[batch_indexes, :]
                 batch_out = train_out[batch_indexes, :]
                 # Remove these indices from the available pool
-                available_indexes = available_indexes[~np.in1d(available_indexes, batch_indexes).reshape(available_indexes.shape)]
+                available_indexes = available_indexes[~np.in1d(available_indexes,
+                                                               batch_indexes).reshape(available_indexes.shape)]
 
                 # Run the network forward with the current weights
                 self.forward(batch_in)
@@ -159,13 +181,14 @@ class NumpyNet:
                 error[layer_index] = batch_out - self.layer[layer_index]
                 # Find the direction of the target value and move towards it depending on confidence
                 delta[layer_index] = (self.learning_rate * error[layer_index] *
-                                      self.activation_function(self.layer[layer_index], deriv=True))
+                                      self.activation_function[layer_index-1](self.layer[layer_index], deriv=True))
 
                 # Work backwards through the hidden layers
                 for layer_index in range(len(self.layer) - 2, 0, -1):
                     error[layer_index] = delta[layer_index + 1].dot(self.weight[layer_index].T)
                     # Find the direction of the target value and move towards it depending on confidence
-                    delta[layer_index] = error[layer_index] * self.activation_function(self.layer[layer_index], deriv=True)
+                    delta[layer_index] = error[layer_index] * \
+                                         self.activation_function[layer_index-1](self.layer[layer_index], deriv=True)
 
                 # Update the weights using the deltas we just found
                 for layer_index in range(len(self.layer) - 1, 0, -1):
@@ -211,7 +234,8 @@ class NumpyNet:
         for l in range(self.num_layers-1):
             log.out.info("Layer " + str(l+1) + ": " + str(self.layer[l].shape))
             log.out.info("Weight " + str(l+1) + ": " + str(self.weight[l].shape))
-        log.out.info("Layer " + str(self.num_layers+1) + ": " + str(self.layer[-1].shape))
+            log.out.info("Activation " + str(l+1) + ": " + str(self.activation_names[l]))
+        log.out.info("Layer " + str(self.num_layers) + ": " + str(self.layer[-1].shape))
 
     def save(self, filename):
         """
