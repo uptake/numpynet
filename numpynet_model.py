@@ -19,7 +19,6 @@ class NumpyNet:
     weight = []  # Also called synapses
     num_layers = 0
 
-    # TODO make activation an array so you can use different activations on different layers
     def __init__(self, num_features, batch_size, num_hidden=0, hidden_sizes=None,
                  activation="sigmoid", learning_rate=0.01,
                  learning_decay=None, weight_decay=None, dropout_rate=None,
@@ -102,6 +101,11 @@ class NumpyNet:
 
         # Initialize layers with zeros
         self.forward(np.zeros(self.input_shape))
+
+        # Add this list of all the layer sizes for easy access later
+        self.layer_sizes = list()
+        for layer in self.layer:
+            self.layer_sizes.append(layer.shape[1])
 
     def forward(self, input_features):
         """

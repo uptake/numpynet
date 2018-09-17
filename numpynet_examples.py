@@ -150,12 +150,16 @@ def complete_a_picture():
     num_features = train_in.shape[1]
 
     numpy_net = NumpyNet(num_features, batch_size,
-                         num_hidden=4, hidden_sizes=[64, 32, 32, 32],
-                         activation=["sigmoid", "tanh", "tanh", "sigmoid", "sigmoid"],
+                         num_hidden=5, hidden_sizes=[8, 32, 64, 32, 8],
+                         # num_hidden=5, hidden_sizes=[4, 8, 16, 8, 4],
+                         # activation=["sigmoid", "tanh", "tanh", "tanh", "tanh", "sigmoid"],
+                         activation="relu",
                          learning_rate=0.0002,
                          dropout_rate=None, weight_decay=None,
                          random_seed=None)
     numpy_net.report_model()
+    if max(numpy_net.layer_sizes) <= 16:
+        nnviz.test_svg(numpy_net)
 
     numpy_net.train(train_in, train_out, epochs=5000,
                     visualize=True, visualize_percent=1, save_best="./numpynet_best_model.pickle",

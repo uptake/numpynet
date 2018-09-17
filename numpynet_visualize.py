@@ -5,6 +5,7 @@ Supports numpynet visualizations in Visdom
 """
 import numpy as np
 from visdom import Visdom
+from loggit import log
 
 viz = Visdom()
 viz.close()
@@ -207,3 +208,109 @@ def plot_func(x_vals, y_vals, title="Foo"):
                 title=title,
                 showlegend=False)
              )
+
+
+def test_svg(net):
+
+    svg_str = """
+    <svg width="900px" height="500px" viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet" >
+    <rect id="numpynet_architecture" x="0" y="0" width="900" height="500" style="fill: none; stroke: none;"/>
+    
+    <circle id="c_000_000" cx="100" cy="100" style="fill:khaki;stroke:black;stroke-width:1px;" r="20"/>
+    <circle id="c_000_001" cx="100" cy="150" style="fill:khaki;stroke:black;stroke-width:1px;" r="20"/>
+    <circle id="c_000_002" cx="100" cy="200" style="fill:khaki;stroke:black;stroke-width:1px;" r="20"/>
+    
+    <circle id="c_001_000" cx="200" cy="50" style="fill:cornflowerblue;stroke:black;stroke-width:1px;" r="20"/>
+    <circle id="c_001_001" cx="200" cy="100" style="fill:cornflowerblue;stroke:black;stroke-width:1px;" r="20"/>
+    <circle id="c_001_002" cx="200" cy="150" style="fill:cornflowerblue;stroke:black;stroke-width:1px;" r="20"/>
+    <circle id="c_001_003" cx="200" cy="200" style="fill:cornflowerblue;stroke:black;stroke-width:1px;" r="20"/>
+    <circle id="c_001_004" cx="200" cy="250" style="fill:cornflowerblue;stroke:black;stroke-width:1px;" r="20"/>
+    
+    <circle id="c_002_000" cx="300" cy="100" style="fill:darkorange;stroke:black;stroke-width:1px;" r="20"/>
+    <circle id="c_002_001" cx="300" cy="150" style="fill:darkorange;stroke:black;stroke-width:1px;" r="20"/>
+    <circle id="c_002_002" cx="300" cy="200" style="fill:darkorange;stroke:black;stroke-width:1px;" r="20"/>
+    
+    <line id="l_000000" x1="100" y1="100" x2="200" y2="40" style="stroke:black;fill:none;stroke-width:1px;"/>
+    <line id="l_000001" x1="100" y1="100" x2="200" y2="90" style="stroke:black;fill:none;stroke-width:1px;"/>
+    <line id="l_000002" x1="100" y1="100" x2="200" y2="140" style="stroke:black;fill:none;stroke-width:1px;"/>
+    <line id="l_000003" x1="100" y1="150" x2="200" y2="40" style="stroke:black;fill:none;stroke-width:1px;"/>
+    <line id="l_000004" x1="100" y1="150" x2="200" y2="90" style="stroke:black;fill:none;stroke-width:1px;"/>
+    <line id="l_000005" x1="100" y1="150" x2="200" y2="140" style="stroke:black;fill:none;stroke-width:1px;"/>
+    <line id="l_000006" x1="100" y1="200" x2="200" y2="40" style="stroke:black;fill:none;stroke-width:1px;"/>
+    <line id="l_000007" x1="100" y1="200" x2="200" y2="90" style="stroke:black;fill:none;stroke-width:1px;"/>
+    <line id="l_000008" x1="100" y1="200" x2="200" y2="140" style="stroke:black;fill:none;stroke-width:1px;"/>
+    
+    <text style="fill:black;font-family:Arial;font-size:20px;" x="100" y="400" id="e16_texte" >Layer 1</text>
+    
+    </svg>
+    """
+
+    width = 800
+    height = 600
+    margin = 0.05
+    w = int(width * (1.0 - margin))
+    h = int(height * (1.0 - margin))
+    # Figure out size of circles and how they'll sit on the drawing
+    max_layer_size = np.max(net.layer_sizes)
+    radius = int(np.floor(h / (2.5 * max_layer_size)))
+    if radius < 10.0:
+        log.out.warning("High layer sizes, this image is going to be pretty busy.")
+
+    # Construct the svg
+    svg_str = """
+    <svg width="%spx" height="%spx" viewBox="0 0 %s %s" preserveAspectRatio="xMidYMid meet" >
+    <rect id="numpynet_architecture" x="0" y="0" width="%s" height="%s" style="fill: none; stroke: none;"/>
+    """
+    populate_tuple = (width, height, width, height, width, height)
+    svg_str = svg_str % populate_tuple
+
+    # Add a layer of circles
+    layer_sizes = net.layer_sizes
+    layer_colors = ["khaki"]
+    layer_colors += ["cornflowerblue"] * (net.num_layers - 2)
+    layer_colors += ["darkorange"]
+    cid = 0
+    lid = 0
+
+    x_positions = list()
+    y_positions = list()
+    x_space = int(np.floor(w / (len(layer_sizes)+0.5)))
+    for i in range(len(layer_sizes)):
+        x_positions.append(x_space + (x_space*i))
+    for i in range(len(layer_sizes)):
+        y_positions_last = list(y_positions)
+        y_positions = list()
+        if layer_sizes[i] % 2 == 0:
+            for j in range(int(np.floor(layer_sizes[i]/2))):
+                y_positions.append(int(h/2.0) + ((j+1)*(radius*2.5)) - (radius*1.25))
+                y_positions.append(int(h/2.0) - ((j+1)*(radius*2.5)) + (radius*1.25))
+        else:
+            y_positions.append(int(h/2.0))
+            for j in range(int(np.floor(layer_sizes[i]/2))):
+                y_positions.append(int(h/2.0) + ((j+1)*(radius*2.5)))
+                y_positions.append(int(h/2.0) - ((j+1)*(radius*2.5)))
+        y_positions = sorted(y_positions)
+
+        for j in range(layer_sizes[i]):
+            svg_str += """
+                \n <circle id="c_%s" cx="%s" cy="%s" style="fill:%s;stroke:black;stroke-width:1px;" r="%s"/>
+                """
+            populate_tuple = (cid, x_positions[i], y_positions[j], layer_colors[i], radius)
+            svg_str = svg_str % populate_tuple
+            cid += 1
+            # Draw lines
+            if i > 0:
+                for last_j in range(layer_sizes[i-1]):
+                    svg_str += """
+                        \n <line id="%s" x1="%s" y1="%s" x2="%s" y2="%s" 
+                        style="stroke:black;fill:none;stroke-width:1px;"/>
+                        """
+                    populate_tuple = (lid, x_positions[i], y_positions[j], x_positions[i-1], y_positions_last[last_j])
+                    svg_str = svg_str % populate_tuple
+                    lid += 1
+    svg_str += "\n </svg>"
+
+    viz.svg(svg_str, opts=dict(title="Numpynet Architecture",
+                               width=width,
+                               height=height,
+                               showlegend=False))
