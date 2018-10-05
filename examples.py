@@ -138,12 +138,12 @@ def complete_a_picture(viz_client):
 
     :param viz_client: An instance of NumpynetVizClient
     """
-    # x_min = 0.0; x_max = 2.0; y_min = 0; y_max = 1.0
-    # train_in, train_out = make_checkerboard_training_set(num_points=1000, noise=0.00, randomize=True,
-    #                                                      x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max)
+    x_min = 0.0; x_max = 2.0; y_min = 0; y_max = 1.0
+    train_in, train_out = make_checkerboard_training_set(num_points=1000, noise=0.00, randomize=True,
+                                                         x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max)
 
-    x_min = 0.0; x_max = 1.0; y_min = 0.0; y_max = 1.0
-    train_in, train_out = make_smiley_training_set(num_points=1000)
+    # x_min = 0.0; x_max = 1.0; y_min = 0.0; y_max = 1.0
+    # train_in, train_out = make_smiley_training_set(num_points=1000)
 
     viz_client.plot_2d_classes(train_in, train_out, title="Training data",
                                x_min=x_min, x_max=x_max,
