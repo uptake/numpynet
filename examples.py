@@ -139,21 +139,15 @@ def complete_a_picture(viz_client):
     :param viz_client: An instance of NumpynetVizClient
     """
     x_min = 0.0; x_max = 2.0; y_min = 0; y_max = 1.0
-    # x_min = 0.4; x_max = 0.6; y_min = 0.45; y_max = 0.55
-
     train_in, train_out = make_checkerboard_training_set(num_points=1000, noise=0.00, randomize=True,
                                                          x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max)
 
     # x_min = 0.0; x_max = 1.0; y_min = 0.0; y_max = 1.0
     # train_in, train_out = make_smiley_training_set(num_points=1000)
 
-    viz_client.plot_2d_classes(train_in,
-                               train_out,
-                               title="Training data",
-                               x_min=x_min,
-                               x_max=x_max,
-                               y_min=y_min,
-                               y_max=y_max,
+    viz_client.plot_2d_classes(train_in, train_out, title="Training data",
+                               x_min=x_min, x_max=x_max,
+                               y_min=y_min, y_max=y_max,
                                delta=0.01)
 
     training_size = train_in.shape[0]
@@ -163,7 +157,6 @@ def complete_a_picture(viz_client):
     numpy_net = NumpyNet(num_features, batch_size,
                          num_hidden=5, hidden_sizes=[8, 32, 64, 32, 8],
                          activation=["sigmoid", "tanh", "tanh", "tanh", "tanh", "sigmoid"],
-                         # activation="relu",
                          learning_rate=0.0002,
                          dropout_rate=None, weight_decay=None,
                          random_seed=None)
@@ -183,11 +176,6 @@ def plot_activations():
         x = np.linspace(-10.0, 10.0, 100)
         y = common.Activation(activation).function(x, deriv=False)
         dy = common.Activation(activation).function(x, deriv=True)
-        print("\n" + activation)
-        print("==================================")
-        print(x)
-        print(y)
-        print("\n")
         viz_client.plot_func(x, y, title=activation)
         viz_client.plot_func(x, dy, title="d_"+activation)
 
@@ -224,9 +212,9 @@ if __name__ == '__main__':
     # Set up NumpynetVizClient
     viz_client = NumpynetVizClient(viz=viz)
 
-    plot_activations()
+    # plot_activations()
 
-    # complete_a_picture(viz_client)
+    complete_a_picture(viz_client)
 
     # load_a_model("./numpynet_best_model.pickle")
 

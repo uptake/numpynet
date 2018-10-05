@@ -12,7 +12,7 @@ class Activation:
     A class to hold all of the activation functions, ensures all have derivatives
     """
     function = None
-    available = ["tanh", "_tanhpos", "bugged_sigmoid", "sigmoid", "relu", "softmax", "stablesoftmax"]
+    available = ["tanh", "_tanhpos", "sigmoid", "relu"]
 
     def __init__(self, choice="sigmoid"):
         """
@@ -25,16 +25,10 @@ class Activation:
             self.function = self._tanh
         elif choice == "_tanhpos":
             self.function = self._tanhpos
-        elif choice == "bugged_sigmoid":
-            self.function = self._bugged_sigmoid
         elif choice == "sigmoid":
             self.function = self._sigmoid
         elif choice == "relu":
             self.function = self._relu
-        elif choice == "softmax":
-            self.function = self._softmax
-        elif choice == "stablesoftmax":
-            self.function = self._stablesoftmax
 
     @staticmethod
     def _tanh(x, deriv=False):
@@ -55,16 +49,6 @@ class Activation:
         return (np.tanh(x) + 1.0) / 2.0
 
     @staticmethod
-    def _bugged_sigmoid(x, deriv=False):
-        """
-        A function meant to be sigmoid and a bug i made for derivative
-        TODO Why does this work? Going to leave it for now, because it's interesting
-        """
-        if deriv:
-            return x * (1.0 - x)  # This is wrong.
-        return 1.0 / (1.0 + np.exp(-x))
-
-    @staticmethod
     def _sigmoid(x, deriv=False):
         """
         The sigmoid function and its derivative
@@ -81,28 +65,7 @@ class Activation:
         """
         if deriv:
             return 1.0 * (x > 0)
-        return np.maximum(x, 0, x)
-
-    @staticmethod
-    # TODO: Check this again
-    def _softmax(x, deriv=False):
-        """
-        Compute softmax values for each sets of scores in x.
-        """
-        e_x = np.exp(x - np.max(x))
-        if deriv:
-            return (x - np.max(x)) * e_x / e_x.sum(axis=0)
-        return e_x / e_x.sum(axis=0)
-
-    @staticmethod
-    # TODO: this needs to be completed
-    def _stablesoftmax(x, deriv=False):
-        """
-        Compute the softmax of vector x in a numerically stable way.
-        """
-        shiftx = x - np.max(x)
-        exps = np.exp(shiftx)
-        return exps / np.sum(exps)
+        return np.maximum(x, 0)
 
 
 def predict_2d_space(net, delta=0.05):

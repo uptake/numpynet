@@ -7,7 +7,6 @@ import math
 import pickle
 import numpy as np
 import numpynet.common as common
-import numpynet.visualize as NumpynetVizClient
 from numpynet.loggit import log
 
 
