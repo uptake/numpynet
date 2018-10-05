@@ -12,7 +12,7 @@ class Activation:
     A class to hold all of the activation functions, ensures all have derivatives
     """
     function = None
-    available = ["tanh", "tanhp1", "bugged_sigmoid", "sigmoid", "relu", "softmax", "stablesoftmax"]
+    available = ["tanh", "_tanhpos", "bugged_sigmoid", "sigmoid", "relu", "softmax", "stablesoftmax"]
 
     def __init__(self, choice="sigmoid"):
         """
@@ -23,8 +23,8 @@ class Activation:
             raise ValueError
         elif choice == "tanh":
             self.function = self._tanh
-        elif choice == "tanhp1":
-            self.function = self._tanhp1
+        elif choice == "_tanhpos":
+            self.function = self._tanhpos
         elif choice == "bugged_sigmoid":
             self.function = self._bugged_sigmoid
         elif choice == "sigmoid":
@@ -46,12 +46,12 @@ class Activation:
         return np.tanh(x)
 
     @staticmethod
-    def _tanhp1(x, deriv=False):
+    def _tanhpos(x, deriv=False):
         """
-        Hyperbolic tangent plus 1 activation
+        Positive hyperbolic tangent activation
         """
         if deriv:
-            return 1.0 - np.power(np.tanh(x), 2) / 2.0
+            return (1.0 - np.power(np.tanh(x), 2)) / 2.0
         return (np.tanh(x) + 1.0) / 2.0
 
     @staticmethod
@@ -84,7 +84,7 @@ class Activation:
         return np.maximum(x, 0, x)
 
     @staticmethod
-    # TODO: this should be right but doesn't seem to work :(  Check it again
+    # TODO: Check this again
     def _softmax(x, deriv=False):
         """
         Compute softmax values for each sets of scores in x.

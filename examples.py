@@ -139,6 +139,7 @@ def complete_a_picture(viz_client):
     :param viz_client: An instance of NumpynetVizClient
     """
     x_min = 0.0; x_max = 2.0; y_min = 0; y_max = 1.0
+    # x_min = 0.4; x_max = 0.6; y_min = 0.45; y_max = 0.55
 
     train_in, train_out = make_checkerboard_training_set(num_points=1000, noise=0.00, randomize=True,
                                                          x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max)
@@ -161,19 +162,34 @@ def complete_a_picture(viz_client):
 
     numpy_net = NumpyNet(num_features, batch_size,
                          num_hidden=5, hidden_sizes=[8, 32, 64, 32, 8],
-                         # num_hidden=5, hidden_sizes=[4, 8, 16, 8, 4],
                          activation=["sigmoid", "tanh", "tanh", "tanh", "tanh", "sigmoid"],
+                         # activation="relu",
                          learning_rate=0.0002,
                          dropout_rate=None, weight_decay=None,
                          random_seed=None)
     numpy_net.set_viz_client(viz_client)
+
     numpy_net.report_model()
     if max(numpy_net.layer_sizes) <= 16:
-        NumpynetVizClient.test_svg(numpy_net)
+        numpy_net.viz.test_svg(numpy_net)
 
     numpy_net.train(train_in, train_out, epochs=5000,
                     visualize=True, visualize_percent=1, save_best="./numpynet_best_model.pickle",
                     debug_visualize=True)
+
+
+def plot_activations():
+    for activation in common.Activation.available:
+        x = np.linspace(-10.0, 10.0, 100)
+        y = common.Activation(activation).function(x, deriv=False)
+        dy = common.Activation(activation).function(x, deriv=True)
+        print("\n" + activation)
+        print("==================================")
+        print(x)
+        print(y)
+        print("\n")
+        viz_client.plot_func(x, y, title=activation)
+        viz_client.plot_func(x, dy, title="d_"+activation)
 
 
 # TODO write this!
@@ -206,9 +222,11 @@ if __name__ == '__main__':
     viz.close()
 
     # Set up NumpynetVizClient
-    client = NumpynetVizClient(viz=viz)
+    viz_client = NumpynetVizClient(viz=viz)
 
-    complete_a_picture(client)
+    plot_activations()
+
+    # complete_a_picture(viz_client)
 
     # load_a_model("./numpynet_best_model.pickle")
 
