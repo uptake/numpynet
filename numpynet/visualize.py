@@ -207,47 +207,13 @@ class NumpynetVizClient:
         :param title: (str) better title than "Foo"
         """
         self.viz.line(Y=y_vals,
-                 X=x_vals,
-                 opts=dict(
-                    title=title,
-                    showlegend=False)
-                 )
+                      X=x_vals,
+                      opts=dict(title=title,
+                                showlegend=False,
+                                fillarea=True)
+                      )
 
     def test_svg(self, net):
-
-        svg_str = """
-        <svg width="900px" height="500px" viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet" >
-        <rect id="numpynet_architecture" x="0" y="0" width="900" height="500" style="fill: none; stroke: none;"/>
-        
-        <circle id="c_000_000" cx="100" cy="100" style="fill:khaki;stroke:black;stroke-width:1px;" r="20"/>
-        <circle id="c_000_001" cx="100" cy="150" style="fill:khaki;stroke:black;stroke-width:1px;" r="20"/>
-        <circle id="c_000_002" cx="100" cy="200" style="fill:khaki;stroke:black;stroke-width:1px;" r="20"/>
-        
-        <circle id="c_001_000" cx="200" cy="50" style="fill:cornflowerblue;stroke:black;stroke-width:1px;" r="20"/>
-        <circle id="c_001_001" cx="200" cy="100" style="fill:cornflowerblue;stroke:black;stroke-width:1px;" r="20"/>
-        <circle id="c_001_002" cx="200" cy="150" style="fill:cornflowerblue;stroke:black;stroke-width:1px;" r="20"/>
-        <circle id="c_001_003" cx="200" cy="200" style="fill:cornflowerblue;stroke:black;stroke-width:1px;" r="20"/>
-        <circle id="c_001_004" cx="200" cy="250" style="fill:cornflowerblue;stroke:black;stroke-width:1px;" r="20"/>
-        
-        <circle id="c_002_000" cx="300" cy="100" style="fill:darkorange;stroke:black;stroke-width:1px;" r="20"/>
-        <circle id="c_002_001" cx="300" cy="150" style="fill:darkorange;stroke:black;stroke-width:1px;" r="20"/>
-        <circle id="c_002_002" cx="300" cy="200" style="fill:darkorange;stroke:black;stroke-width:1px;" r="20"/>
-        
-        <line id="l_000000" x1="100" y1="100" x2="200" y2="40" style="stroke:black;fill:none;stroke-width:1px;"/>
-        <line id="l_000001" x1="100" y1="100" x2="200" y2="90" style="stroke:black;fill:none;stroke-width:1px;"/>
-        <line id="l_000002" x1="100" y1="100" x2="200" y2="140" style="stroke:black;fill:none;stroke-width:1px;"/>
-        <line id="l_000003" x1="100" y1="150" x2="200" y2="40" style="stroke:black;fill:none;stroke-width:1px;"/>
-        <line id="l_000004" x1="100" y1="150" x2="200" y2="90" style="stroke:black;fill:none;stroke-width:1px;"/>
-        <line id="l_000005" x1="100" y1="150" x2="200" y2="140" style="stroke:black;fill:none;stroke-width:1px;"/>
-        <line id="l_000006" x1="100" y1="200" x2="200" y2="40" style="stroke:black;fill:none;stroke-width:1px;"/>
-        <line id="l_000007" x1="100" y1="200" x2="200" y2="90" style="stroke:black;fill:none;stroke-width:1px;"/>
-        <line id="l_000008" x1="100" y1="200" x2="200" y2="140" style="stroke:black;fill:none;stroke-width:1px;"/>
-        
-        <text style="fill:black;font-family:Arial;font-size:20px;" x="100" y="400" id="e16_texte" >Layer 1</text>
-        
-        </svg>
-        """
-
         width = 800
         height = 600
         margin = 0.05
@@ -314,6 +280,6 @@ class NumpynetVizClient:
         svg_str += "\n </svg>"
 
         self.viz.svg(svg_str, opts=dict(title="Numpynet Architecture",
-                                   width=width,
-                                   height=height,
-                                   showlegend=False))
+                                        width=width,
+                                        height=height,
+                                        showlegend=False))
