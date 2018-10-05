@@ -213,7 +213,7 @@ class NumpynetVizClient:
                                 fillarea=True)
                       )
 
-    def test_svg(self, net):
+    def network_svg(self, net):
         width = 800
         height = 600
         margin = 0.05
