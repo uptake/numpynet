@@ -261,6 +261,7 @@ class NumpyNet:
         self.viz = None
 
         # Overwrites any existing file.
+        log.out.info("Saving numpynet object to a pickle")
         with open(filename, 'wb') as ouput_handle:
             pickle.dump(self, ouput_handle, pickle.HIGHEST_PROTOCOL)
 
@@ -275,6 +276,7 @@ class NumpyNet:
         :param filename: (str) The name of the file you wan to load
         :return: (object) The net object
         """
+        log.out.info("Loading numpynet object from a pickle")
         with open(filename, 'rb') as f:
             net = pickle.load(f)
         return net

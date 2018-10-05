@@ -103,8 +103,8 @@ def make_smiley_training_set(num_points=0, delta=0.05):
 
     # Assign an xor boolean value to the coordinates
     for coord_point in coords:
-        x = coord_point[1]
-        y = coord_point[0]
+        x = coord_point[0]
+        y = coord_point[1]
         if (abs(x - 0.65) < delta) & (abs(y - 0.65) < (0.05+delta)):
             bools.append(True)
         elif (abs(x - 0.35) < delta) & (abs(y - 0.65) < (0.05+delta)):
@@ -138,12 +138,12 @@ def complete_a_picture(viz_client):
 
     :param viz_client: An instance of NumpynetVizClient
     """
-    x_min = 0.0; x_max = 2.0; y_min = 0; y_max = 1.0
-    train_in, train_out = make_checkerboard_training_set(num_points=1000, noise=0.00, randomize=True,
-                                                         x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max)
+    # x_min = 0.0; x_max = 2.0; y_min = 0; y_max = 1.0
+    # train_in, train_out = make_checkerboard_training_set(num_points=1000, noise=0.00, randomize=True,
+    #                                                      x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max)
 
-    # x_min = 0.0; x_max = 1.0; y_min = 0.0; y_max = 1.0
-    # train_in, train_out = make_smiley_training_set(num_points=1000)
+    x_min = 0.0; x_max = 1.0; y_min = 0.0; y_max = 1.0
+    train_in, train_out = make_smiley_training_set(num_points=1000)
 
     viz_client.plot_2d_classes(train_in, train_out, title="Training data",
                                x_min=x_min, x_max=x_max,
@@ -155,7 +155,8 @@ def complete_a_picture(viz_client):
     num_features = train_in.shape[1]
 
     numpy_net = NumpyNet(num_features, batch_size,
-                         num_hidden=5, hidden_sizes=[8, 32, 64, 32, 8],
+                         # num_hidden=5, hidden_sizes=[8, 32, 64, 32, 8],
+                         num_hidden=5, hidden_sizes=[4, 8, 16, 8, 4],
                          activation=["sigmoid", "tanh", "tanh", "tanh", "tanh", "sigmoid"],
                          learning_rate=0.0002,
                          dropout_rate=None, weight_decay=None,
@@ -164,9 +165,9 @@ def complete_a_picture(viz_client):
 
     numpy_net.report_model()
     if max(numpy_net.layer_sizes) <= 16:
-        numpy_net.viz.test_svg(numpy_net)
+        numpy_net.viz.network_svg(numpy_net)
 
-    numpy_net.train(train_in, train_out, epochs=5000,
+    numpy_net.train(train_in, train_out, epochs=10000,
                     visualize=True, visualize_percent=1, save_best="./numpynet_best_model.pickle",
                     debug_visualize=True)
 
@@ -212,11 +213,9 @@ if __name__ == '__main__':
     # Set up NumpynetVizClient
     viz_client = NumpynetVizClient(viz=viz)
 
-    # plot_activations()
-
     complete_a_picture(viz_client)
 
-    # load_a_model("./numpynet_best_model.pickle")
+    # load_a_model("./numpynet_best_model.pickle", viz_client)
 
     # Shut down and clean up
     total_time = round((time.time() - start_time), 0)
