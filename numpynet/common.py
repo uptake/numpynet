@@ -19,8 +19,9 @@ class Activation:
         :param choice: Which activation function you want, must be in self.available
         """
         if choice not in self.available:
-            log.out.error("Choice of activation (" + choice + ") not available!")
-            raise ValueError
+            msg = "Choice of activation (" + choice + ") not available!"
+            log.out.error(msg)
+            raise ValueError(msg)
         elif choice == "tanh":
             self.function = self._tanh
         elif choice == "_tanhpos":
