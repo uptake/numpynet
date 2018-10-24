@@ -12,7 +12,7 @@ class Activation:
     A class to hold all of the activation functions, ensures all have derivatives
     """
     function = None
-    available = ["tanh", "_tanhpos", "sigmoid", "relu", "softplus"]
+    available = ["tanh", "_tanhpos", "sigmoid", "relu", "softplus", "leakyrelu"]
 
     def __init__(self, choice="sigmoid"):
         """
@@ -32,6 +32,8 @@ class Activation:
             self.function = self._softplus
         elif choice == "relu":
             self.function = self._relu
+        elif choice == "leakyrelu":
+            self.function = self._leakyrelu
 
     @staticmethod
     def _tanh(x, deriv=False):
@@ -79,6 +81,15 @@ class Activation:
         if deriv:
             return 1.0 * (x > 0)
         return np.maximum(x, 0)
+
+    @staticmethod
+    def _leakyrelu(x, deriv=False):
+        """
+        Rectified linear unit activation function
+        """
+        if deriv:
+            return 1.0 * (x > 0) - 0.01 * (x < 0)
+        return np.maximum(x, 0.01 * x)
 
 
 def predict_2d_space(net, delta=0.05):
