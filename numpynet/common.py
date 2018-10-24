@@ -12,21 +12,24 @@ class Activation:
     A class to hold all of the activation functions, ensures all have derivatives
     """
     function = None
-    available = ["tanh", "tanhpos", "sigmoid", "relu"]
+    available = ["tanh", "tanhpos", "sigmoid", "relu", "softplus"]
 
     def __init__(self, choice="sigmoid"):
         """
         :param choice: Which activation function you want, must be in self.available
         """
         if choice not in self.available:
-            log.out.error("Choice of activation (" + choice + ") not available!")
-            raise ValueError
+            msg = "Choice of activation (" + choice + ") not available!"
+            log.out.error(msg)
+            raise ValueError(msg)
         elif choice == "tanh":
             self.function = self._tanh
         elif choice == "tanhpos":
             self.function = self._tanhpos
         elif choice == "sigmoid":
             self.function = self._sigmoid
+        elif choice == "softplus":
+            self.function = self._softplus
         elif choice == "relu":
             self.function = self._relu
 
@@ -56,6 +59,16 @@ class Activation:
         y = 1.0 / (1.0 + np.exp(-x))
         if deriv:
             return y * (1.0 - y)
+        return y
+    
+    @staticmethod
+    def _softplus(x, deriv=False):
+        """
+        The soft-plus function and its derivative
+        """
+        y = np.log(1.0 + (np.exp(x)))
+        if deriv:
+            return 1.0 / (1.0 + np.exp(-x))
         return y
 
     @staticmethod
