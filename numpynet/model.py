@@ -62,12 +62,14 @@ class NumpyNet:
                     self.activation_function.append(common.Activation(activation[i]).function)
                 self.activation_names = activation
             else:
-                log.out.error("activation_function must be one less than the number of layers in your network " +
-                              "(num_layers-1 = " + str(self.num_layers - 1) + ")")
-                raise ValueError
+                msg = ("activation_function must be one less than the number of layers in your network "
+                       "(num_layers-1 = " + str(self.num_layers - 1) + ")")
+                log.out.error(msg)
+                raise ValueError(msg)
         else:
-            log.out.error("activation_function must be a string or a list of strings")
-            raise ValueError
+            msg = "activation_function must be a string or a list of strings"
+            log.out.error(msg)
+            raise ValueError(msg)
 
         # Set network hyperparameters
         self.learning_rate = learning_rate
