@@ -12,7 +12,7 @@ class Activation:
     A class to hold all of the activation functions, ensures all have derivatives
     """
     function = None
-    available = ["tanh", "_tanhpos", "sigmoid", "relu"]
+    available = ["tanh", "_tanhpos", "sigmoid", "relu", "softplus"]
 
     def __init__(self, choice="sigmoid"):
         """
@@ -27,6 +27,8 @@ class Activation:
             self.function = self._tanhpos
         elif choice == "sigmoid":
             self.function = self._sigmoid
+        elif choice == "softplus":
+            self.function = self._softplus
         elif choice == "relu":
             self.function = self._relu
 
@@ -56,6 +58,16 @@ class Activation:
         y = 1.0 / (1.0 + np.exp(-x))
         if deriv:
             return y * (1.0 - y)
+        return y
+    
+    @staticmethod
+    def _softplus(x, deriv=False):
+        """
+        The soft-plus function and its derivative
+        """
+        y = np.log(1.0 + (np.exp(x)))
+        if deriv:
+            return 1.0 / (1.0 + np.exp(-x))
         return y
 
     @staticmethod
