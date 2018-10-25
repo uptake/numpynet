@@ -8,7 +8,10 @@ import pickle
 import numpy as np
 import numpynet.common as common
 from numpynet.loggit import log
+import atexit
+import copy
 
+best_self = None
 
 class NumpyNet:
     """
@@ -151,6 +154,8 @@ class NumpyNet:
         :param visualize_percent: (float) If above is true how often you want to visualize (percent of epochs)
         :param debug_visualize: (bool) Turns on debug visualizations
         """
+        self.save_best = save_best
+        atexit.register(self.execute_at_exit)
         set_size = train_in.shape[0]
         log.out.info("Given " + str(set_size) + " training points.")
         iterations = math.ceil(set_size / self.batch_size)
@@ -214,8 +219,8 @@ class NumpyNet:
             # If saving the best models check if this is the best so far
             if save_best is not None:
                 if self.loss_history[-1] == min(self.loss_history):
-                    log.out.info("Current model is the best so far, saving.")
-                    self.save(save_best)
+                    log.out.info("Current model is the best so far, copying.")
+                    best_self = copy.copy(self)
 
             # Report error every x% and output visualization
             if (e % runfracround) == 0:
@@ -250,26 +255,11 @@ class NumpyNet:
             log.out.info("Activation " + str(l+1) + ": " + str(self.activation_names[l]))
         log.out.info("Layer " + str(self.num_layers) + ": " + str(self.layer[-1].shape))
 
-    def save(self, filename):
-        """
-        Saves this NumpyNet object to a pickle
-        :param filename: (str) The name of the file you wan to save
-        """
-        # TODO could add some filesystem checks to make sure this is writeable
-
-        # pickle cannot serialize Visdom objects, so need to remove before writing
-        log.out.info("Unsetting viz client")
-        viz_copy = self.viz
-        self.viz = None
-
-        # Overwrites any existing file.
-        log.out.info("Saving numpynet object to a pickle")
-        with open(filename, 'wb') as ouput_handle:
-            pickle.dump(self, ouput_handle, pickle.HIGHEST_PROTOCOL)
-
-        log.out.info("Resetting viz client")
-        self.set_viz_client(viz_copy)
-        pass
+    def execute_at_exit(self):
+        if self.save_best is not None:
+            log.out.info("Saving numpynet object to a pickle")
+            with open(self.save_best, 'wb') as ouput_handle:
+                pickle.dump(best_self, ouput_handle, pickle.HIGHEST_PROTOCOL)
 
     @staticmethod
     def load(filename):
