@@ -79,16 +79,16 @@ class Activation:
         Rectified linear unit activation function
         """
         if deriv:
-            return 1.0 * (x > 0)
+            return 1.0 * (x >= 0)
         return np.maximum(x, 0)
 
     @staticmethod
     def _leakyrelu(x, deriv=False):
         """
-        Rectified linear unit activation function
+        Rectified linear unit activation function with small value for negatives
         """
         if deriv:
-            return 1.0 * (x > 0) - 0.01 * (x < 0)
+            return 1.0 * (x >= 0) - 0.01 * (x < 0)
         return np.maximum(x, 0.01 * x)
 
 
