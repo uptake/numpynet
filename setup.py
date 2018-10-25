@@ -1,4 +1,5 @@
-import setuptools
+from setuptools import find_packages
+from setuptools import setup
 
 # Required packages
 dependencies = [
@@ -11,7 +12,8 @@ documentation_packages = [
     "sphinxcontrib-programoutput"
 ]
 testing_packages = [
-    "pytest"
+    "pytest",
+    "coverage"
 ]
 
 setuptools.setup(

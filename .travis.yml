@@ -1,0 +1,18 @@
+language: python
+sudo: false
+ # Currently, cran-server only works on python 3.6
+matrix:
+  include:
+      - os: linux
+        python: 3.6
+ # Install cran-server
+install:
+  - pip install .
+ # Test cran-server
+script:
+  # Install libraries only needed by tests
+  - pip install requests
+  # Run tests
+  - python -m pytest
+ after_success:
+  - echo "tests passed"
