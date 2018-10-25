@@ -138,38 +138,41 @@ def complete_a_picture(viz_client):
 
     :param viz_client: An instance of NumpynetVizClient
     """
+    # Get a training set for a set of x-y coordinates, this one is part of a checkerboard pattern
     x_min = 0.0; x_max = 2.0; y_min = 0; y_max = 1.0
     train_in, train_out = make_checkerboard_training_set(num_points=1000, noise=0.00, randomize=True,
                                                          x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max)
 
-    # x_min = 0.0; x_max = 1.0; y_min = 0.0; y_max = 1.0
-    # train_in, train_out = make_smiley_training_set(num_points=1000)
-
+    # Plot he training set
     viz_client.plot_2d_classes(train_in, train_out, title="Training data",
                                x_min=x_min, x_max=x_max,
-                               y_min=y_min, y_max=y_max,
-                               delta=0.01)
+                               y_min=y_min, y_max=y_max, delta=0.01)
 
     training_size = train_in.shape[0]
     batch_size = round(training_size / 3.0)
     num_features = train_in.shape[1]
 
+    # Initialize a numpynet object
     numpy_net = NumpyNet(num_features, batch_size,
-                         # num_hidden=5, hidden_sizes=[8, 32, 64, 32, 8],
                          num_hidden=5, hidden_sizes=[4, 8, 16, 8, 4],
-                         activation=["sigmoid", "tanh", "tanh", "tanh", "tanh", "sigmoid"],
-                         learning_rate=0.0002,
+                         activation=["tanh", "tanh", "tanh", "tanh", "tanh", "tanh"],
+                         learning_rate=0.0001,
                          dropout_rate=None, weight_decay=None,
-                         random_seed=None)
+                         random_seed=1337)
+    # Hook the object up to the viz client
     numpy_net.set_viz_client(viz_client)
 
+    # A basic report of the net to the logs
     numpy_net.report_model()
-    if max(numpy_net.layer_sizes) <= 16:
-        numpy_net.viz.network_svg(numpy_net)
 
+    # Train the model!
     numpy_net.train(train_in, train_out, epochs=10000,
                     visualize=True, visualize_percent=1, save_best="./numpynet_best_model.pickle",
                     debug_visualize=True)
+
+    # A silly viz of the network architecture (if the net isn't too huge to make it muddled)
+    if max(numpy_net.layer_sizes) <= 16:
+        numpy_net.viz.network_svg(numpy_net)
 
 
 def plot_activations():
