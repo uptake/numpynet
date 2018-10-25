@@ -1,5 +1,6 @@
 # NumpyNet
 
+![alt text](https://mybroadband.co.za/news/wp-content/uploads/2017/04/Neural-network.jpg)
 
 ## What is NumpyNet?
 ----
