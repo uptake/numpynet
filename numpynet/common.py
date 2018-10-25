@@ -12,7 +12,7 @@ class Activation:
     A class to hold all of the activation functions, ensures all have derivatives
     """
     function = None
-    available = ["tanh", "_tanhpos", "sigmoid", "relu", "softplus", "leakyrelu"]
+    available = ["tanh", "tanhpos", "sigmoid", "relu", "softplus", "leakyrelu"]
 
     def __init__(self, choice="sigmoid"):
         """
@@ -24,7 +24,7 @@ class Activation:
             raise ValueError(msg)
         elif choice == "tanh":
             self.function = self._tanh
-        elif choice == "_tanhpos":
+        elif choice == "tanhpos":
             self.function = self._tanhpos
         elif choice == "sigmoid":
             self.function = self._sigmoid
