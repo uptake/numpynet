@@ -258,8 +258,8 @@ class NumpyNet:
     def execute_at_exit(self):
         if self.save_best is not None:
             log.out.info("Saving numpynet object to a pickle")
-            with open(self.save_best, 'wb') as ouput_handle:
-                pickle.dump(best_self, ouput_handle, pickle.HIGHEST_PROTOCOL)
+            with open(self.save_best, 'wb') as output_handle:
+                pickle.dump(best_self, output_handle, pickle.HIGHEST_PROTOCOL)
 
     @staticmethod
     def load(filename):
