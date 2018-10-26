@@ -1,4 +1,5 @@
 # NumpyNet
+![Build Status](https://api.travis-ci.org/UptakeOpenSource/numpynet.svg?branch=master)
 
 ![alt text](https://mybroadband.co.za/news/wp-content/uploads/2017/04/Neural-network.jpg)
 
@@ -34,6 +35,5 @@ Run a demo and have some fun:
 
 ## Testing the code
 
-We have not set up integration on [Travis CI](https://travis-ci.org/) yet (but it's [coming soon](https://github.com/UptakeOpenSource/numpynet/issues/10)!). For now, to test that this project is building, just do the following:
+Take a look at our [travis.yml](.travis.yml) for integration testing using [Travis CI](https://travis-ci.org). For local testing use `./integration.sh`.
 
-    ./integration.sh
