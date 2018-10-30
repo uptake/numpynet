@@ -14,5 +14,5 @@ script:
   - pip install requests
   # Run tests
   - python -m pytest
- after_success:
+after_success:
   - echo "tests passed"
