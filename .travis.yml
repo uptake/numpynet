@@ -1,6 +1,5 @@
 language: python
 sudo: false
- # Currently, cran-server only works on python 3.6
 matrix:
   include:
       - os: linux
