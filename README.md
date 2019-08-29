@@ -1,7 +1,7 @@
 # NumpyNet
 ![Build Status](https://api.travis-ci.org/UptakeOpenSource/numpynet.svg?branch=master)
 
-![alt text](https://mybroadband.co.za/news/wp-content/uploads/2017/04/Neural-network.jpg)
+![](https://raw.githubusercontent.com/mairuoliu/numpynet/master/readme_figures/demo.gif)
 
 ## What is NumpyNet?
 ----
