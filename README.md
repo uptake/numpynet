@@ -7,6 +7,7 @@
 ----
 NumpyNet is a very simple python framework for neural networks.  It meant to be a teaching tool so that people can really get under the hood and learn the basics about how neural network are built and how they work.  
 It includes nice visualizations of the process so that the user can watch what is going on as the models learn and make predictions.  It's only dependencies are numpy, which does the math, and [visdom](https://github.com/facebookresearch/visdom), which does the visualizations.
+![](https://raw.githubusercontent.com/uptake/numpynet/master/readme_figures/demo.gif)
 
 ## State of the Repo
 ----
