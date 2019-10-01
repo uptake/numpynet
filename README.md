@@ -1,7 +1,7 @@
 # NumpyNet
-![Travis Build Status](https://api.travis-ci.org/UptakeOpenSource/numpynet.svg?branch=master)
+[![Travis Build Status](https://api.travis-ci.org/UptakeOpenSource/numpynet.svg?branch=master)](https://travis-ci.org/jameslamb/doppel-cli )
 
-[![Travis Build Status](https://img.shields.io/travis/jameslamb/doppel-cli.svg?label=travis&logo=travis&branch=master)](https://travis-ci.org/jameslamb/doppel-cli)
+#[![Travis Build Status](https://img.shields.io/travis/jameslamb/doppel-cli.svg?label=travis&logo=travis&branch=master)]#(https://travis-ci.org/jameslamb/doppel-cli)
 
 ## What is NumpyNet?
 ----
