@@ -1,7 +1,8 @@
 # NumpyNet
-[![Travis Build Status](https://api.travis-ci.org/UptakeOpenSource/numpynet.svg?branch=master)](https://travis-ci.org/jameslamb/doppel-cli )
+[![Travis Build Status](https://img.shields.io/travis/uptake/numpynet?logo=travis)](https://travis-ci.org/uptake/numpynet)
 
-(https://pypi.org/project/doppel-cli) [![Travis Build Status](https://img.shields.io/travis/jameslamb/doppel-cli.svg?label=travis&logo=travis&branch=master)](https://travis-ci.org/jameslamb/doppel-cli)
+
+
 ## What is NumpyNet?
 ----
 NumpyNet is a very simple python framework for neural networks.  It meant to be a teaching tool so that people can really get under the hood and learn the basics about how neural network are built and how they work.  
