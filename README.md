@@ -1,12 +1,7 @@
 # NumpyNet
 [![Travis Build Status](https://img.shields.io/travis/uptake/numpynet?logo=travis)](https://travis-ci.org/uptake/numpynet)
-[license](https://img.shields.io/github/license/uptake/numpynet)
-
-
-
-
-
-
+[![license](https://img.shields.io/github/license/uptake/numpynet)](https://github.com/uptake/numpynet/blob/master/LICENSE)
+[![Open issues](https://img.shields.io/github/issues-raw/uptake/numpynet)](https://github.com/uptake/numpynet/issues)
 
 
 ## What is NumpyNet?
