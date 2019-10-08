@@ -1,5 +1,11 @@
 # NumpyNet
 [![Travis Build Status](https://img.shields.io/travis/uptake/numpynet?logo=travis)](https://travis-ci.org/uptake/numpynet)
+[![license](https://img.shields.io/github/license/uptake/numpynet)]
+
+
+
+
+
 
 
 
