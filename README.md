@@ -17,7 +17,7 @@ It includes nice visualizations of the process so that the user can watch what i
 ----
 Grab NumpyNet:
 
-    git clone https://github.com/UptakeOpenSource/numpynet.git
+    git clone https://github.com/uptake/numpynet.git
     cd numpynet
 
 Install NumpyNet (will install `visdom` as well):

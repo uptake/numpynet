@@ -21,7 +21,7 @@ setuptools.setup(
     author='Brad Beechler',
     author_email='Chronocook@gmail.com',
     description='Approachable neural net implementation in pure numpy',
-    url='https://github.com/UptakeOpenSource/numpynet',
+    url='https://github.com/uptake/numpynet',
     packages=setuptools.find_packages(),
     install_requires=dependencies,
     extras_require={
