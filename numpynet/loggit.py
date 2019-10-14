@@ -36,8 +36,9 @@ class LogObject:
     onConsole = None
     onFile = None
 
-
-    def __init__(self, filePath=None, fileName=None, header=None, onConsole=True, onFile=True):
+    def __init__(
+        self, filePath=None, fileName=None, header=None, onConsole=True, onFile=True
+    ):
         """
         Initialize log object.
         """
@@ -48,10 +49,17 @@ class LogObject:
         self.header = header
         self.onConsole = onConsole
         self.onFile = onFile
-        self.startLog(filePath=self.filePath, fileName=self.fileName, header=self.header,
-                      onConsole=self.onConsole, onFile=self.onFile)
+        self.startLog(
+            filePath=self.filePath,
+            fileName=self.fileName,
+            header=self.header,
+            onConsole=self.onConsole,
+            onFile=self.onFile,
+        )
 
-    def startLog(self, filePath=None, fileName=None, header=None, onConsole=True, onFile=True):
+    def startLog(
+        self, filePath=None, fileName=None, header=None, onConsole=True, onFile=True
+    ):
         """
         Initialize log file with optional path and optional file name.
         Parameters:
@@ -71,10 +79,10 @@ class LogObject:
 
         # Create Global Logger
         try:
-            self.out = logging.getLogger(str(__main__.__file__)+'_logger')
+            self.out = logging.getLogger(str(__main__.__file__) + "_logger")
 
         except AttributeError:
-            self.out = logging.getLogger(str(__name__+'_logger'))
+            self.out = logging.getLogger(str(__name__ + "_logger"))
 
         # Clear old handlers
         self.out.handlers = []
@@ -83,7 +91,9 @@ class LogObject:
 
         # create formatter and add to handlers
         if self.header is None:
-            formatter = logging.Formatter("%(asctime)s;%(levelname)s;%(funcName)20s();%(message)s")
+            formatter = logging.Formatter(
+                "%(asctime)s;%(levelname)s;%(funcName)20s();%(message)s"
+            )
         elif self.header == "message_only":
             formatter = logging.Formatter("%(message)s")
         elif self.header == "simple":
@@ -106,7 +116,7 @@ class LogObject:
 
             if fileName is None:
                 # If not provided, the fileName is set to the top level file calling the global logger.
-                self.fileName = main_filename + '.log'
+                self.fileName = main_filename + ".log"
             else:
                 self.fileName = fileName
 
@@ -121,10 +131,10 @@ class LogObject:
                     else:  # Something unexpected went wrong so reraise the exception.
                         raise
                 else:  # No exception, so the file must have been created successfully.
-                    with open(self.fileFullName, 'w') as file_obj:
-                        file_obj.write(main_filename + ' Log File\n')
+                    with open(self.fileFullName, "w") as file_obj:
+                        file_obj.write(main_filename + " Log File\n")
             else:
-                sys.exit('ERROR! Path specified not able to be written to!')
+                sys.exit("ERROR! Path specified not able to be written to!")
 
             # create console and file handler and set level to debug
             file_handle = logging.FileHandler(self.fileFullName)
@@ -144,22 +154,19 @@ class LogObject:
             standard_handle.setFormatter(formatter)
             self.out.addHandler(standard_handle)
 
-
     def stopLog(self):
         """
         Release logging handlers.
         """
         self.out.handlers = []
 
-
-    def setLevel(self,level_tag):
+    def setLevel(self, level_tag):
         """
         Sets the logging level
         levelStr (str) - a string describing the desired logging level
                         'INFO', 'DEBUG', 'WARNING', also 'NOTSET'
         """
         self.out.setLevel(logging.getLevelName(level_tag))
-
 
     def changeFileName(self, new_name, header=None, onConsole=True, onFile=True):
         """
@@ -177,7 +184,7 @@ class LogObject:
         # Check if name is okay
         # Copy old log to new name
         new_path, new_filename = os.path.split(new_name)
-        if new_path == '':
+        if new_path == "":
             new_path = self.filePath
         new_full_filename = os.path.join(new_path, new_filename)
         if os.access(new_path, os.W_OK):
@@ -185,8 +192,13 @@ class LogObject:
             if self.onFile:
                 copyfile(self.fileFullName, new_full_filename)
                 os.remove(self.fileFullName)
-            self.startLog(filePath=new_path, fileName=new_filename, header=header,
-                          onConsole=onConsole, onFile=onFile)
+            self.startLog(
+                filePath=new_path,
+                fileName=new_filename,
+                header=header,
+                onConsole=onConsole,
+                onFile=onFile,
+            )
         else:
             log.out.warning("No permissions to write new log name")
 
