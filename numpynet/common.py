@@ -11,6 +11,7 @@ class Activation:
     """
     A class to hold all of the activation functions, ensures all have derivatives
     """
+
     function = None
     available = ["tanh", "tanhpos", "sigmoid", "relu", "softplus", "leakyrelu"]
 
@@ -62,7 +63,7 @@ class Activation:
         if deriv:
             return y * (1.0 - y)
         return y
-    
+
     @staticmethod
     def _softplus(x, deriv=False):
         """
