@@ -10,18 +10,19 @@ from numpynet.loggit import log
 
 # TODO clean up indents
 
-class NumpynetVizClient:
 
-    def __init__(self,
-                 viz=None,
-                 loss_window=None,
-                 loss_window_rolling=None,
-                 prediction_2d=None,
-                 layer_window_01=None,
-                 layer_window_02=None,
-                 weight_window_01=None,
-                 weight_window_02=None
-                 ):
+class NumpynetVizClient:
+    def __init__(
+        self,
+        viz=None,
+        loss_window=None,
+        loss_window_rolling=None,
+        prediction_2d=None,
+        layer_window_01=None,
+        layer_window_02=None,
+        weight_window_01=None,
+        weight_window_02=None,
+    ):
         if viz is None:
             self.viz = Visdom()
         else:
@@ -44,35 +45,35 @@ class NumpynetVizClient:
         """
 
         y_vals = np.array(loss_history)
-        x_vals = np.arange(1, len(loss_history)+1)
+        x_vals = np.arange(1, len(loss_history) + 1)
         rolling_size = max(1, rolling_size)
         rolling_size_safe = min(len(loss_history), rolling_size)
-        y_vals_rolling = np.array(loss_history[len(loss_history)-rolling_size_safe:len(loss_history)])
-        x_vals_rolling = np.arange(len(loss_history)-rolling_size_safe+1,
-                                   len(loss_history)-rolling_size_safe + len(y_vals_rolling)+1)
+        y_vals_rolling = np.array(
+            loss_history[len(loss_history) - rolling_size_safe : len(loss_history)]
+        )
+        x_vals_rolling = np.arange(
+            len(loss_history) - rolling_size_safe + 1,
+            len(loss_history) - rolling_size_safe + len(y_vals_rolling) + 1,
+        )
         if self.loss_window is None:
-            self.loss_window = self.viz.line(Y=y_vals,
-                                        X=x_vals,
-                                        opts=dict(
-                                           title="Loss History",
-                                           showlegend=False)
-                                        )
-            self.loss_window_rolling = self.viz.line(Y=y_vals_rolling,
-                                                X=x_vals_rolling,
-                                                opts=dict(
-                                                    title="Loss History Rolling",
-                                                    showlegend=False
-                                                )
-                                                )
+            self.loss_window = self.viz.line(
+                Y=y_vals, X=x_vals, opts=dict(title="Loss History", showlegend=False)
+            )
+            self.loss_window_rolling = self.viz.line(
+                Y=y_vals_rolling,
+                X=x_vals_rolling,
+                opts=dict(title="Loss History Rolling", showlegend=False),
+            )
         else:
-            self.loss_window = self.viz.line(Y=y_vals,
-                                        X=x_vals,
-                                        win=self.loss_window,
-                                        update='replace')
-            self.loss_window_rolling = self.viz.line(Y=y_vals_rolling,
-                                                X=x_vals_rolling,
-                                                win=self.loss_window_rolling,
-                                                update='replace')
+            self.loss_window = self.viz.line(
+                Y=y_vals, X=x_vals, win=self.loss_window, update="replace"
+            )
+            self.loss_window_rolling = self.viz.line(
+                Y=y_vals_rolling,
+                X=x_vals_rolling,
+                win=self.loss_window_rolling,
+                update="replace",
+            )
 
     def plot_network(self, net):
         """
@@ -82,63 +83,48 @@ class NumpynetVizClient:
 
         num_layer = len(net.layer)
         if self.layer_window_01 is None:
-            self.layer_window_01 = self.viz.heatmap(X=net.layer[1],
-                                          opts=dict(
-                                              title="First Hidden Layer",
-                                              colormap='Electric',
-                                              )
-                                          )
-            self.layer_window_02 = self.viz.heatmap(X=net.layer[num_layer - 2],
-                                          opts=dict(
-                                              title="Last Hidden Layer",
-                                              colormap='Electric',
-                                              )
-                                          )
+            self.layer_window_01 = self.viz.heatmap(
+                X=net.layer[1],
+                opts=dict(title="First Hidden Layer", colormap="Electric"),
+            )
+            self.layer_window_02 = self.viz.heatmap(
+                X=net.layer[num_layer - 2],
+                opts=dict(title="Last Hidden Layer", colormap="Electric"),
+            )
         else:
-            self.layer_window_01 = self.viz.heatmap(X=net.layer[1],
-                                          win=self.layer_window_01,
-                                          opts=dict(
-                                              title="First Hidden Layer",
-                                              colormap='Electric',
-                                              )
-                                          )
-            self.layer_window_02 = self.viz.heatmap(X=net.layer[num_layer - 2],
-                                          win=self.layer_window_02,
-                                          opts=dict(
-                                              title="Last Hidden Layer",
-                                              colormap='Electric',
-                                              )
-                                          )
+            self.layer_window_01 = self.viz.heatmap(
+                X=net.layer[1],
+                win=self.layer_window_01,
+                opts=dict(title="First Hidden Layer", colormap="Electric"),
+            )
+            self.layer_window_02 = self.viz.heatmap(
+                X=net.layer[num_layer - 2],
+                win=self.layer_window_02,
+                opts=dict(title="Last Hidden Layer", colormap="Electric"),
+            )
         if self.weight_window_01 is None:
-            self.weight_window_01 = self.viz.heatmap(X=net.weight[0],
-                                           opts=dict(
-                                               title="First Weights",
-                                               colormap='Electric',
-                                               )
-                                           )
-            self.weight_window_02 = self.viz.heatmap(X=net.weight[num_layer - 2],
-                                           opts=dict(
-                                               title="Last Weights",
-                                               colormap='Electric',
-                                               )
-                                           )
+            self.weight_window_01 = self.viz.heatmap(
+                X=net.weight[0], opts=dict(title="First Weights", colormap="Electric")
+            )
+            self.weight_window_02 = self.viz.heatmap(
+                X=net.weight[num_layer - 2],
+                opts=dict(title="Last Weights", colormap="Electric"),
+            )
         else:
-            self.weight_window_01 = self.viz.heatmap(X=net.weight[0],
-                                           win=self.weight_window_01,
-                                           opts=dict(
-                                               title="First Weights",
-                                               colormap='Electric',
-                                               )
-                                           )
-            self.weight_window_02 = self.viz.heatmap(X=net.weight[num_layer - 2],
-                                           win=self.weight_window_02,
-                                           opts=dict(
-                                               title="Last Weights",
-                                               colormap='Electric',
-                                               )
-                                           )
+            self.weight_window_01 = self.viz.heatmap(
+                X=net.weight[0],
+                win=self.weight_window_01,
+                opts=dict(title="First Weights", colormap="Electric"),
+            )
+            self.weight_window_02 = self.viz.heatmap(
+                X=net.weight[num_layer - 2],
+                win=self.weight_window_02,
+                opts=dict(title="Last Weights", colormap="Electric"),
+            )
 
-    def plot_2d_prediction(self, prediction_matrix, axis_x, axis_y, title="Current Prediction"):
+    def plot_2d_prediction(
+        self, prediction_matrix, axis_x, axis_y, title="Current Prediction"
+    ):
         """
         Sends a plot of a prediction over 2D to visdom
         :param prediction_matrix: (np.array) array of predicted values
@@ -147,28 +133,38 @@ class NumpynetVizClient:
         :param title: (str) whatever you want to title the plot
         """
         if self.prediction_2d is None:
-            self.prediction_2d = self.viz.heatmap(X=prediction_matrix.T,
-                                        opts=dict(
-                                            title=title,
-                                            columnnames=list(axis_x.astype(str)),
-                                            rownames=list(axis_y.astype(str)),
-                                            colormap='Electric',
-                                            )
-                                        )
+            self.prediction_2d = self.viz.heatmap(
+                X=prediction_matrix.T,
+                opts=dict(
+                    title=title,
+                    columnnames=list(axis_x.astype(str)),
+                    rownames=list(axis_y.astype(str)),
+                    colormap="Electric",
+                ),
+            )
         else:
-            self.prediction_2d = self.viz.heatmap(X=prediction_matrix.T,
-                                        win=self.prediction_2d,
-                                        opts=dict(
-                                            title=title,
-                                            columnnames=list(axis_x.astype(str)),
-                                            rownames=list(axis_y.astype(str)),
-                                            colormap='Electric',
-                                        ))
+            self.prediction_2d = self.viz.heatmap(
+                X=prediction_matrix.T,
+                win=self.prediction_2d,
+                opts=dict(
+                    title=title,
+                    columnnames=list(axis_x.astype(str)),
+                    rownames=list(axis_y.astype(str)),
+                    colormap="Electric",
+                ),
+            )
 
-    def plot_2d_classes(self, train_in, train_out,
-                        x_min=0.0, x_max=1.0,
-                        y_min=0.0, y_max=1.0, delta=0.02,
-                        title="2d Classifications"):
+    def plot_2d_classes(
+        self,
+        train_in,
+        train_out,
+        x_min=0.0,
+        x_max=1.0,
+        y_min=0.0,
+        y_max=1.0,
+        delta=0.02,
+        title="2d Classifications",
+    ):
         """
         A lot like plot_2d_prediction above but supports plotting the sparse grid
         :param train_in: (np.array) array of predicted values
@@ -195,8 +191,8 @@ class NumpynetVizClient:
                 title=title,
                 columnnames=list(axis_x.astype(str)),
                 rownames=list(axis_y.astype(str)),
-                colormap='Electric',
-            )
+                colormap="Electric",
+            ),
         )
 
     def plot_func(self, x_vals, y_vals, title="Foo"):
@@ -206,12 +202,9 @@ class NumpynetVizClient:
         :param y_vals: (np.array) y values
         :param title: (str) better title than "Foo"
         """
-        self.viz.line(Y=y_vals,
-                      X=x_vals,
-                      opts=dict(title=title,
-                                showlegend=False,
-                                fillarea=True)
-                      )
+        self.viz.line(
+            Y=y_vals, X=x_vals, opts=dict(title=title, showlegend=False, fillarea=True)
+        )
 
     def network_svg(self, net):
         width = 800
@@ -243,43 +236,64 @@ class NumpynetVizClient:
 
         x_positions = list()
         y_positions = list()
-        x_space = int(np.floor(w / (len(layer_sizes)+0.5)))
+        x_space = int(np.floor(w / (len(layer_sizes) + 0.5)))
         for i in range(len(layer_sizes)):
-            x_positions.append(x_space + (x_space*i))
+            x_positions.append(x_space + (x_space * i))
         for i in range(len(layer_sizes)):
             y_positions_last = list(y_positions)
             y_positions = list()
             if layer_sizes[i] % 2 == 0:
-                for j in range(int(np.floor(layer_sizes[i]/2))):
-                    y_positions.append(int(h/2.0) + ((j+1)*(radius*2.5)) - (radius*1.25))
-                    y_positions.append(int(h/2.0) - ((j+1)*(radius*2.5)) + (radius*1.25))
+                for j in range(int(np.floor(layer_sizes[i] / 2))):
+                    y_positions.append(
+                        int(h / 2.0) + ((j + 1) * (radius * 2.5)) - (radius * 1.25)
+                    )
+                    y_positions.append(
+                        int(h / 2.0) - ((j + 1) * (radius * 2.5)) + (radius * 1.25)
+                    )
             else:
-                y_positions.append(int(h/2.0))
-                for j in range(int(np.floor(layer_sizes[i]/2))):
-                    y_positions.append(int(h/2.0) + ((j+1)*(radius*2.5)))
-                    y_positions.append(int(h/2.0) - ((j+1)*(radius*2.5)))
+                y_positions.append(int(h / 2.0))
+                for j in range(int(np.floor(layer_sizes[i] / 2))):
+                    y_positions.append(int(h / 2.0) + ((j + 1) * (radius * 2.5)))
+                    y_positions.append(int(h / 2.0) - ((j + 1) * (radius * 2.5)))
             y_positions = sorted(y_positions)
 
             for j in range(layer_sizes[i]):
                 svg_str += """
                     \n <circle id="c_%s" cx="%s" cy="%s" style="fill:%s;stroke:black;stroke-width:1px;" r="%s"/>
                     """
-                populate_tuple = (cid, x_positions[i], y_positions[j], layer_colors[i], radius)
+                populate_tuple = (
+                    cid,
+                    x_positions[i],
+                    y_positions[j],
+                    layer_colors[i],
+                    radius,
+                )
                 svg_str = svg_str % populate_tuple
                 cid += 1
                 # Draw lines
                 if i > 0:
-                    for last_j in range(layer_sizes[i-1]):
+                    for last_j in range(layer_sizes[i - 1]):
                         svg_str += """
                             \n <line id="%s" x1="%s" y1="%s" x2="%s" y2="%s" 
                             style="stroke:black;fill:none;stroke-width:1px;"/>
                             """
-                        populate_tuple = (lid, x_positions[i], y_positions[j], x_positions[i-1], y_positions_last[last_j])
+                        populate_tuple = (
+                            lid,
+                            x_positions[i],
+                            y_positions[j],
+                            x_positions[i - 1],
+                            y_positions_last[last_j],
+                        )
                         svg_str = svg_str % populate_tuple
                         lid += 1
         svg_str += "\n </svg>"
 
-        self.viz.svg(svg_str, opts=dict(title="Numpynet Architecture",
-                                        width=width,
-                                        height=height,
-                                        showlegend=False))
+        self.viz.svg(
+            svg_str,
+            opts=dict(
+                title="Numpynet Architecture",
+                width=width,
+                height=height,
+                showlegend=False,
+            ),
+        )
